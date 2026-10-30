@@ -32,6 +32,18 @@ not included in the final image.
 - Toggles for conditional skills (Agitator, Weakness Exploit, Peak Performance, ...) and item buffs (charms, talons, petalace)
 - The build saves automatically to the browser. "Copy share link" puts the whole build in the URL.
 
+## Equipment icons
+
+The game has no unique artwork per weapon in its menus. Every weapon and armor piece is shown with
+its type icon, tinted by rarity color, and the simulator does the same. The icon masks and element badges in
+`web/images/` were downloaded from the [MHRice](https://mhrise.mhrice.info) site with:
+
+```sh
+python3 tools/fetch_icons.py
+```
+
+They're committed to the repo, so building the image doesn't need network access. Re-run the script only to refresh them.
+
 ## Damage math
 
 - Attack = round(weapon attack x (product of % bonuses) + flat skill bonuses + item bonuses)
@@ -49,6 +61,7 @@ skill sheet. They just aren't tagged "in stats".
 
 ```
 tools/extract_data.py     raw dump -> compact game data (runs during docker build)
+tools/fetch_icons.py      downloads the equipment icons into web/images (already committed)
 web/index.html            page shell
 web/js/data/              GameDataRepository (indexed data access)
 web/js/models/            Build, EquippedWeapon/Armor, Talisman, DecorationSocket

@@ -35,6 +35,31 @@ export function createSlotIcon(slotLevel, isFilled = false) {
   });
 }
 
+/**
+ * The game's menu icon for a weapon type or armor slot, tinted with the rarity color.
+ * `equipmentKey` is a weapon type key (e.g. "long_sword") or armor type ("head").
+ * Element badges are drawn in the bottom corners like in the game.
+ */
+export function createEquipmentIcon(equipmentKey, rarity, elementTypes = [], size = "medium") {
+  const maskLayer = (layerName, className) => {
+    const layerElement = createElement("span", { className });
+    const maskUrl = `url("images/equip/${equipmentKey}.${layerName}.png")`;
+    layerElement.style.maskImage = maskUrl;
+    layerElement.style.webkitMaskImage = maskUrl;
+    return layerElement;
+  };
+  const elementBadges = elementTypes.slice(0, 2).map((elementType, badgeIndex) => {
+    const badgeElement = createElement("span", { className: `equip-icon-badge badge-position-${badgeIndex}` });
+    badgeElement.style.backgroundImage = `url("images/element/${elementType}.png")`;
+    return badgeElement;
+  });
+  return createElement("span", { className: `equip-icon equip-icon-${size} rarity-tint-${rarity}`, attributes: { "aria-hidden": "true" } }, [
+    maskLayer("a", "equip-icon-outline"),
+    maskLayer("r", "equip-icon-fill"),
+    ...elementBadges,
+  ]);
+}
+
 export function createRarityBadge(rarity) {
   return createElement("span", { className: `rarity-badge rarity-${rarity}`, text: `R${rarity}` });
 }

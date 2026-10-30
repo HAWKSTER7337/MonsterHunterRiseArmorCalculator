@@ -1,6 +1,7 @@
 import { ARMOR_TYPES, ARMOR_TYPE_LABELS, ELEMENT_LABELS } from "../data/GameDataRepository.js";
 import { Talisman } from "../models/Equipment.js";
-import { createElement, createRarityBadge, createSelect, createSlotIcon } from "./dom.js";
+import { createElement, createEquipmentIcon, createRarityBadge, createSelect, createSlotIcon } from "./dom.js";
+import { weaponElementTypes } from "./EquipmentPickers.js";
 
 const MAX_TALISMAN_SLOT_LEVEL = 4;
 
@@ -21,8 +22,11 @@ export class EquipmentPanel {
     );
   }
 
-  renderCardHeader(label, itemData, onChoose) {
+  /** `iconKey` is the weapon type or armor slot; with no item equipped the icon is shown greyed out. */
+  renderCardHeader(label, itemData, onChoose, iconKey = null, elementTypes = []) {
+    const icon = iconKey && createEquipmentIcon(iconKey, itemData ? itemData.rarity : "empty", elementTypes, "large");
     return createElement("button", { className: "equipment-header", onClick: onChoose, title: "Click to change" }, [
+      icon,
       createElement("span", { className: "equipment-label", text: label }),
       itemData
         ? createElement("span", { className: "equipment-name" }, [createRarityBadge(itemData.rarity), itemData.name])
@@ -70,7 +74,8 @@ export class EquipmentPanel {
     const lookupRampageDecoration = (decorationId) => this.gameDataRepository.getRampageDecoration(decorationId);
 
     return createElement("section", { className: "equipment-card weapon-card" }, [
-      this.renderCardHeader(label, weaponData, () => this.equipmentPickers.openWeaponPicker()),
+      this.renderCardHeader(label, weaponData, () => this.equipmentPickers.openWeaponPicker(),
+        weaponData?.type ?? this.equipmentPickers.lastWeaponType, weaponData ? weaponElementTypes(weaponData) : []),
       weaponData && createElement("div", { className: "equipment-stats" }, [
         createElement("span", { text: `Attack ${weaponData.attack}` }),
         createElement("span", { text: `Affinity ${weaponData.affinity}%` }),
@@ -106,7 +111,7 @@ export class EquipmentPanel {
     const equippedArmor = this.build.armorByType[armorType];
     const armorData = equippedArmor?.armorData ?? null;
     return createElement("section", { className: "equipment-card" }, [
-      this.renderCardHeader(ARMOR_TYPE_LABELS[armorType], armorData, () => this.equipmentPickers.openArmorPicker(armorType)),
+      this.renderCardHeader(ARMOR_TYPE_LABELS[armorType], armorData, () => this.equipmentPickers.openArmorPicker(armorType), armorType),
       equippedArmor && this.renderDefenseSlider(armorType, equippedArmor),
       armorData && createElement("div", { className: "equipment-stats" }, [
         ...Object.entries(armorData.resistances).filter(([, value]) => value !== 0).map(([elementType, value]) =>

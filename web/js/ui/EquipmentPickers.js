@@ -1,6 +1,6 @@
 import { SharpnessCalculator } from "../calc/SharpnessCalculator.js";
 import { ARMOR_TYPE_LABELS, ELEMENT_LABELS, ELEMENTAL_TYPES } from "../data/GameDataRepository.js";
-import { createElement, createRarityBadge, createSlotIcon } from "./dom.js";
+import { createElement, createEquipmentIcon, createRarityBadge, createSlotIcon } from "./dom.js";
 import { PickerDialog } from "./PickerDialog.js";
 import { SharpnessBarView } from "./SharpnessBarView.js";
 
@@ -13,6 +13,9 @@ const totalSlotLevels = (slotLevels) => slotLevels.reduce((total, slotLevel) => 
 const totalSkillPoints = (skillLevels) => skillLevels.reduce((total, skillLevel) => total + skillLevel.level, 0);
 const byName = (first, second) => first.name.localeCompare(second.name);
 const byRarityDescending = (first, second) => second.rarity - first.rarity || first.sortId - second.sortId;
+export const weaponElementTypes = (weapon) => [weapon.element?.type, weapon.subElement?.type].filter(Boolean);
+const createRowWithIcon = (iconElement, rowContent) =>
+  createElement("div", { className: "picker-row-with-icon" }, [iconElement, rowContent]);
 
 /** Filter and sort definitions shared by the weapon and armor pickers. */
 class EquipmentFilters {
@@ -197,7 +200,7 @@ export class EquipmentPickers {
       .filter(Boolean)
       .map((element) => `${ELEMENT_LABELS[element.type]} ${element.value}`)
       .join(" / ");
-    return createElement("div", { className: "picker-row-content" }, [
+    return createRowWithIcon(createEquipmentIcon(weapon.type, weapon.rarity, weaponElementTypes(weapon), "large"), createElement("div", { className: "picker-row-content" }, [
       createElement("div", { className: "picker-row-main" }, [
         createRarityBadge(weapon.rarity),
         createElement("span", { className: "picker-row-name", text: weapon.name }),
@@ -215,7 +218,7 @@ export class EquipmentPickers {
       weapon.sharpness
         ? SharpnessBarView.render(weapon.sharpness, true, this.maxHandicraftBarByWeaponId.get(weapon.id).segmentLengths)
         : null,
-    ]);
+    ]));
   }
 
   openArmorPicker(armorType) {
@@ -273,7 +276,7 @@ export class EquipmentPickers {
         { value: "name", label: "Name (A to Z)", compare: byName },
       ],
       searchText: (armorPiece) => `${armorPiece.name} ${armorPiece.seriesName} ${repository.describeSkillList(armorPiece.skills)}`,
-      renderRow: (armorPiece) => createElement("div", { className: "picker-row-content" }, [
+      renderRow: (armorPiece) => createRowWithIcon(createEquipmentIcon(armorType, armorPiece.rarity, [], "large"), createElement("div", { className: "picker-row-content" }, [
         createElement("div", { className: "picker-row-main" }, [
           createRarityBadge(armorPiece.rarity),
           createElement("span", { className: "picker-row-name", text: armorPiece.name }),
@@ -286,7 +289,7 @@ export class EquipmentPickers {
               createElement("span", { className: `element-text element-${elementType}${value < 0 ? " negative" : ""}`, title: `${ELEMENT_LABELS[elementType]} resistance`, text: `${ELEMENT_LABELS[elementType]} ${value}` }))),
         ]),
         this.createSkillTags(armorPiece.skills),
-      ]),
+      ])),
       onSelect: (armorPiece) => this.build.equipArmor(armorType, armorPiece),
     });
   }
