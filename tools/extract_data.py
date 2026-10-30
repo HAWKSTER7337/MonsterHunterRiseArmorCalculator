@@ -1,9 +1,11 @@
 """Builds a compact game-data JSON for the armor simulator from the raw mhrice.json dump.
 
-Usage: python extract_data.py <path/to/mhrice.json> <path/to/output.json>
+Usage: python extract_data.py <path/to/mhrice.json[.xz]> <path/to/output.json>
+The input may be plain JSON or xz-compressed (.xz), which is how it is stored in the repo.
 """
 
 import json
+import lzma
 import sys
 
 ENGLISH_LANGUAGE_INDEX = 1
@@ -441,7 +443,8 @@ def main():
     if len(sys.argv) != 3:
         sys.exit("Usage: python extract_data.py <mhrice.json> <output.json>")
     input_path, output_path = sys.argv[1], sys.argv[2]
-    with open(input_path, encoding="utf-8") as input_file:
+    open_input = lzma.open if input_path.endswith(".xz") else open
+    with open_input(input_path, "rt", encoding="utf-8") as input_file:
         raw_data = json.load(input_file)
     game_data = GameDataBuilder(raw_data).build()
     with open(output_path, "w", encoding="utf-8") as output_file:

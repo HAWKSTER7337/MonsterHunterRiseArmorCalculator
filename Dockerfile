@@ -2,8 +2,8 @@
 FROM python:3.12-slim AS data-extractor
 WORKDIR /build
 COPY tools/extract_data.py ./extract_data.py
-COPY mhrice.json ./mhrice.json
-RUN python extract_data.py mhrice.json game-data.json
+COPY mhrice.json.xz ./mhrice.json.xz
+RUN python extract_data.py mhrice.json.xz game-data.json
 
 # Stage 2: serve the static site.
 FROM nginx:1.27-alpine

@@ -59,6 +59,6 @@ web/js/ui/                panels and the picker dialog
 For local development without Docker:
 
 ```sh
-python3 tools/extract_data.py mhrice.json web/data/game-data.json
+python3 tools/extract_data.py mhrice.json.xz web/data/game-data.json
 python3 -m http.server 7337 -d web
 ```

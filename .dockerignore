@@ -1,5 +1,6 @@
 .git
 **/__pycache__
 web/data/
+mhrice.json
 README.md
 docker-compose.yml
