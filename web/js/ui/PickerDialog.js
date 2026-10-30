@@ -21,7 +21,7 @@ export class PickerDialog {
     this.titleElement = createElement("h2", { className: "picker-title" });
     this.searchInput = createElement("input", {
       className: "picker-search",
-      attributes: { type: "search", placeholder: "Search by name or skill..." },
+      attributes: { type: "search", placeholder: "Search by name, skill or monster..." },
       onInput: () => this.renderRows(),
     });
     this.filterContainer = createElement("div", { className: "picker-filters" });

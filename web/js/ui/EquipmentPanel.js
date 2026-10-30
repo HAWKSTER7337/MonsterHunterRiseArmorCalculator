@@ -1,6 +1,6 @@
 import { ARMOR_TYPES, ARMOR_TYPE_LABELS, ELEMENT_LABELS } from "../data/GameDataRepository.js";
 import { Talisman } from "../models/Equipment.js";
-import { createElement, createEquipmentIcon, createRarityBadge, createSelect, createSlotIcon } from "./dom.js";
+import { createElement, createEquipmentIcon, createRarityBadge, createSelect, createSlotIcon, createWeaponRender } from "./dom.js";
 import { weaponElementTypes } from "./EquipmentPickers.js";
 
 const MAX_TALISMAN_SLOT_LEVEL = 4;
@@ -60,6 +60,11 @@ export class EquipmentPanel {
     ]);
   }
 
+  renderMonsterLine(monsterNames) {
+    if (monsterNames.length === 0) return null;
+    return createElement("div", { className: "monster-line", text: `Made from: ${monsterNames.join(", ")}` });
+  }
+
   renderSkillLine(skillLevels) {
     if (skillLevels.length === 0) return null;
     return createElement("div", { className: "skill-tags" }, skillLevels.map(({ skillId, level }) =>
@@ -84,6 +89,8 @@ export class EquipmentPanel {
         weaponData.defenseBonus ? createElement("span", { text: `Defense +${weaponData.defenseBonus}` }) : null,
         ...weaponData.traits.map((trait) => createElement("span", { text: `${trait.label}: ${trait.value}` })),
       ]),
+      weaponData && createWeaponRender(this.gameDataRepository.getWeaponRenderUrl(weaponData), weaponData.name, "weapon-render-equipped"),
+      weaponData && this.renderMonsterLine(weaponData.monsters),
       weaponData && weaponData.rampageSkills.length > 0 && this.renderRampageSkillSelect(equippedWeapon),
       equippedWeapon && this.renderSocketRow(equippedWeapon.sockets, lookupDecoration,
         (socket) => this.equipmentPickers.openDecorationPicker(socket)),
@@ -118,6 +125,7 @@ export class EquipmentPanel {
           createElement("span", { className: `element-text element-${elementType}`, text: `${ELEMENT_LABELS[elementType]} ${value > 0 ? "+" : ""}${value}` })),
       ]),
       armorData && this.renderSkillLine(armorData.skills),
+      armorData && this.renderMonsterLine(armorData.monsters),
       equippedArmor && this.renderSocketRow(equippedArmor.sockets,
         (decorationId) => this.gameDataRepository.getDecoration(decorationId),
         (socket) => this.equipmentPickers.openDecorationPicker(socket)),

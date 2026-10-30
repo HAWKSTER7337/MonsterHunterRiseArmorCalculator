@@ -6,6 +6,7 @@ The input may be plain JSON or xz-compressed (.xz), which is how it is stored in
 
 import json
 import lzma
+import re
 import sys
 
 ENGLISH_LANGUAGE_INDEX = 1
@@ -109,6 +110,95 @@ class SlotList:
         for level_index, count in enumerate(counts_per_level):
             slot_levels.extend([level_index + 1] * count)
         return sorted(slot_levels, reverse=True)
+
+
+class MonsterMaterialIndex:
+    """
+    Works out which monsters a piece of equipment is made from. A recipe counts toward a monster when:
+      - the recipe itself is unlocked by that monster (its "enemy_flag"),
+      - a material's name contains the monster's name ("Rathalos Ruby" -> Rathalos; the longest name wins,
+        so "Royal Ludroth Claw" counts as Royal Ludroth rather than Ludroth), or
+      - the drop tables show a material comes from that one monster only ("Pearl Glosshide" -> Khezu).
+    Materials dropped by several monsters (e.g. "Lightning Sac") are ignored unless named after one.
+    """
+
+    DROP_TABLE_SECTIONS = ("monster_lot", "monster_lot_mr")
+
+    def __init__(self, raw_data):
+        self.monster_name_by_em_type = self._build_monster_names(raw_data)
+        monster_names = set(self.monster_name_by_em_type.values())
+        self.monster_patterns = [
+            (monster_name, re.compile(rf"(?<![\w-]){re.escape(monster_name)}(?![\w-])", re.IGNORECASE))
+            for monster_name in sorted(monster_names, key=len, reverse=True)
+        ]
+        self.item_names = MessageTable(raw_data, "items_name_msg", "items_name_msg_mr")
+        self.sole_dropper_by_item_number = self._build_sole_droppers(raw_data)
+        self.monsters_by_item_number = {}
+
+    def _build_monster_names(self, raw_data):
+        """Maps a monster's tagged type ({"Em": n} for large, {"Ems": n} for small monsters) to its English name."""
+        names = MessageTable(raw_data, "monster_names", "monster_names_mr")
+        monster_name_by_em_type = {}
+        for monster in raw_data["monsters"] + raw_data["small_monsters"]:
+            enemy_index = monster["enemy_type"]
+            name = names.get(f"EnemyIndex{enemy_index:03d}") or names.get(f"EnemyIndex{enemy_index:03d}_MR")
+            if name:
+                monster_name_by_em_type[TaggedId.split(monster["em_type"])] = name
+        return monster_name_by_em_type
+
+    def _build_sole_droppers(self, raw_data):
+        """Item number -> monster name, for items that only one monster's drop tables contain."""
+        droppers_by_item_number = {}
+        for section_name in self.DROP_TABLE_SECTIONS:
+            for drop_table in raw_data[section_name]["param"]:
+                monster_name = self.monster_name_for(drop_table["em_types"])
+                if monster_name is None:
+                    continue
+                for field_name, field_value in drop_table.items():
+                    if not field_name.endswith("_item_id_list"):
+                        continue
+                    for item_tag in field_value:
+                        tag, item_number = TaggedId.split(item_tag)
+                        if tag == "Normal":
+                            droppers_by_item_number.setdefault(item_number, set()).add(monster_name)
+        return {item_number: next(iter(droppers))
+                for item_number, droppers in droppers_by_item_number.items() if len(droppers) == 1}
+
+    def monster_name_for(self, em_tag):
+        return self.monster_name_by_em_type.get(TaggedId.split(em_tag))
+
+    def monsters_for_item(self, item_tag):
+        tag, item_number = TaggedId.split(item_tag)
+        if tag != "Normal":
+            return []
+        if item_number not in self.monsters_by_item_number:
+            item_name = self.item_names.get(f"I_{item_number:04d}_Name") or ""
+            monsters = self._find_monsters_in_name(item_name)
+            sole_dropper = self.sole_dropper_by_item_number.get(item_number)
+            if not monsters and sole_dropper:
+                monsters = [sole_dropper]
+            self.monsters_by_item_number[item_number] = monsters
+        return self.monsters_by_item_number[item_number]
+
+    def _find_monsters_in_name(self, item_name):
+        found_monsters = []
+        remaining_text = item_name
+        for monster_name, pattern in self.monster_patterns:
+            if pattern.search(remaining_text):
+                found_monsters.append(monster_name)
+                remaining_text = pattern.sub(" ", remaining_text)
+        return found_monsters
+
+    def monsters_for_recipes(self, recipes):
+        """Monster names across all given recipe records, most-used first."""
+        monster_counts = {}
+        for recipe in recipes:
+            recipe_monsters = [self.monster_name_for(recipe.get("enemy_flag"))]
+            for item_tag in recipe.get("item", []):
+                recipe_monsters.extend(self.monsters_for_item(item_tag))
+            for monster_name in filter(None, recipe_monsters):
+                monster_counts[monster_name] = monster_counts.get(monster_name, 0) + 1
+        return sorted(monster_counts, key=lambda monster_name: -monster_counts[monster_name])
 
 
 class SkillExtractor:
@@ -245,9 +335,13 @@ class RampageDecorationExtractor:
 
 
 class ArmorExtractor:
-    def __init__(self, raw_data, valid_skill_ids):
+    def __init__(self, raw_data, valid_skill_ids, monster_material_index):
         self.raw_data = raw_data
         self.valid_skill_ids = valid_skill_ids
+        self.monster_material_index = monster_material_index
+        self.recipes_by_armor_id = {}
+        for recipe in raw_data["armor_product"]["param"]:
+            self.recipes_by_armor_id.setdefault(json.dumps(recipe["id"], sort_keys=True), []).append(recipe)
         self.series_names = MessageTable(raw_data, "armor_series_name_msg", "armor_series_name_msg_mr")
         self.part_names = {
             part_key: MessageTable(raw_data, message_section, message_section + "_mr")
@@ -297,7 +391,8 @@ class ArmorExtractor:
                 "type": ARMOR_PART_KEYS[part_key][0],
                 "name": name,
                 "seriesId": series_id,
-                "seriesName": self.series_names.get(f"ArmorSeries_Hunter_{series_id:03d}") or "",
+                # Series names are keyed by the armor piece's own number, not its "series" field.
+                "seriesName": self.series_names.get(f"ArmorSeries_Hunter_{armor_number:03d}") or "",
                 "rarity": record["rare"],
                 "rank": self._rank_for_rarity(record["rare"]),
                 "defense": record["def_val"],
@@ -311,6 +406,8 @@ class ArmorExtractor:
                 },
                 "slots": SlotList.from_counts(record["decorations_num_list"]),
                 "skills": skills,
+                "monsters": self.monster_material_index.monsters_for_recipes(
+                    self.recipes_by_armor_id.get(json.dumps(record["pl_armor_id"], sort_keys=True), [])),
                 "sortId": record["sort_id"],
             })
         return sorted(self._remove_gender_variants(armor_pieces),
@@ -331,22 +428,101 @@ class ArmorExtractor:
 
 
 class WeaponExtractor:
-    def __init__(self, raw_data, valid_rampage_skill_ids):
+    RECIPE_SECTIONS = ("product", "process")
+
+    def __init__(self, raw_data, valid_rampage_skill_ids, monster_material_index):
         self.raw_data = raw_data
         self.valid_rampage_skill_ids = valid_rampage_skill_ids
+        self.monster_material_index = monster_material_index
+
+    def _recipes_by_weapon_number(self, section, id_tag):
+        """Crafting and upgrade recipes of one weapon type, keyed by weapon number."""
+        recipes_by_weapon_number = {}
+        for recipe_section in self.RECIPE_SECTIONS:
+            for recipe in section.get(recipe_section, {}).get("param", []):
+                weapon_number = recipe["base"]["id"].get(id_tag)
+                recipes_by_weapon_number.setdefault(weapon_number, []).append(recipe["base"])
+        return recipes_by_weapon_number
 
     def extract(self):
         weapons = []
         for type_key, id_tag, _ in WEAPON_TYPES:
             section = self.raw_data[type_key]
             names = MessageTableFromSection(section, "name", "name_mr")
+            recipes_by_weapon_number = self._recipes_by_weapon_number(section, id_tag)
+            weapons_of_type = {}
             for record in section["base_data"]["param"]:
-                weapon = self._build_weapon(type_key, id_tag, NestedRecord.flatten(record), names)
+                flat_record = NestedRecord.flatten(record)
+                weapon = self._build_weapon(type_key, id_tag, flat_record, names, recipes_by_weapon_number)
                 if weapon is not None:
-                    weapons.append(weapon)
+                    weapons_of_type[flat_record["id"][id_tag]] = weapon
+            self._add_line_monsters(weapons_of_type, self._line_by_weapon_number(section, id_tag))
+            self._inherit_monsters_from_upgrade_parents(weapons_of_type, self._parent_weapon_numbers(section, id_tag))
+            weapons.extend(weapons_of_type.values())
         return weapons
 
-    def _build_weapon(self, type_key, id_tag, flat_record, names):
+    @staticmethod
+    def _line_by_weapon_number(section, id_tag):
+        """Weapon number -> its upgrade line (a "TreeType" row of the weapon tree)."""
+        return {node["weapon_id"].get(id_tag): json.dumps(node["tree_type"]) for node in section["tree"]["param"]}
+
+    @staticmethod
+    def _add_line_monsters(weapons_by_number, line_by_weapon_number):
+        """
+        Tags weapons with the main monster of their upgrade line, so e.g. Wasserfallis (upgraded with
+        Rakna-Kadaki parts) is still found under Royal Ludroth. A line only has a main monster when one
+        monster appears in at least half of the line's weapons; ore lines that mix many monsters have none.
+        Weapons whose recipes name no monster are left to inherit from their upgrade parent instead.
+        """
+        monster_counts_by_line = {}
+        weapon_counts_by_line = {}
+        for weapon_number, weapon in weapons_by_number.items():
+            line = line_by_weapon_number.get(weapon_number)
+            if line is None or not weapon["monsters"]:
+                continue
+            weapon_counts_by_line[line] = weapon_counts_by_line.get(line, 0) + 1
+            line_counts = monster_counts_by_line.setdefault(line, {})
+            for monster_name in weapon["monsters"]:
+                line_counts[monster_name] = line_counts.get(monster_name, 0) + 1
+        main_monster_by_line = {}
+        for line, line_counts in monster_counts_by_line.items():
+            main_monster = max(line_counts, key=lambda monster_name: line_counts[monster_name])
+            if line_counts[main_monster] * 2 >= weapon_counts_by_line[line]:
+                main_monster_by_line[line] = main_monster
+        for weapon_number, weapon in weapons_by_number.items():
+            main_monster = main_monster_by_line.get(line_by_weapon_number.get(weapon_number))
+            if main_monster and weapon["monsters"] and main_monster not in weapon["monsters"]:
+                weapon["monsters"].append(main_monster)
+
+    @staticmethod
+    def _parent_weapon_numbers(section, id_tag):
+        """Weapon number -> number of the weapon it is upgraded from, using the weapon tree."""
+        weapon_number_by_tree_position = {
+            (json.dumps(node["tree_type"]), node["index"]): node["weapon_id"].get(id_tag)
+            for node in section["tree"]["param"]
+        }
+        parent_numbers = {}
+        for node in section["tree"]["param"]:
+            parent_position = (json.dumps(node["prev_weapon_type"]), node["prev_weapon_index"])
+            parent_number = weapon_number_by_tree_position.get(parent_position)
+            if parent_number is not None:
+                parent_numbers[node["weapon_id"].get(id_tag)] = parent_number
+        return parent_numbers
+
+    @staticmethod
+    def _inherit_monsters_from_upgrade_parents(weapons_by_number, parent_numbers):
+        """Upgrades made only from generic materials (e.g. anomaly "Afflicted" parts) keep their line's monster."""
+        for weapon_number, weapon in weapons_by_number.items():
+            ancestor_number = parent_numbers.get(weapon_number)
+            visited_numbers = {weapon_number}
+            while not weapon["monsters"] and ancestor_number is not None and ancestor_number not in visited_numbers:
+                visited_numbers.add(ancestor_number)
+                ancestor = weapons_by_number.get(ancestor_number)
+                if ancestor and ancestor["monsters"]:
+                    weapon["monsters"] = list(ancestor["monsters"])
+                ancestor_number = parent_numbers.get(ancestor_number)
+
+    def _build_weapon(self, type_key, id_tag, flat_record, names, recipes_by_weapon_number):
         weapon_number = flat_record["id"][id_tag]
         name = names.get(f"W_{id_tag}_{weapon_number:03d}_Name")
         if name is None or flat_record["atk"] <= 0:
@@ -359,6 +535,7 @@ class WeaponExtractor:
             "name": name,
             "rarity": flat_record["rare_type"],
             "sortId": flat_record["sort_id"],
+            "modelId": flat_record["model_id"],
             "attack": flat_record["atk"],
             "affinity": flat_record["critical_rate"],
             "defenseBonus": flat_record["def_bonus"],
@@ -373,6 +550,7 @@ class WeaponExtractor:
                 if skill_id in self.valid_rampage_skill_ids
             ],
             "traits": WeaponTraitDescriber.describe(flat_record),
+            "monsters": self.monster_material_index.monsters_for_recipes(recipes_by_weapon_number.get(weapon_number, [])),
         }
 
     @staticmethod
@@ -428,14 +606,15 @@ class GameDataBuilder:
         valid_skill_ids = {skill["id"] for skill in skills}
         rampage_skills = RampageSkillExtractor(self.raw_data).extract()
         valid_rampage_skill_ids = {rampage_skill["id"] for rampage_skill in rampage_skills}
+        monster_material_index = MonsterMaterialIndex(self.raw_data)
         return {
             "weaponTypes": [{"key": type_key, "name": display_name} for type_key, _, display_name in WEAPON_TYPES],
             "skills": skills,
             "decorations": DecorationExtractor(self.raw_data, valid_skill_ids).extract(),
             "rampageSkills": rampage_skills,
             "rampageDecorations": RampageDecorationExtractor(self.raw_data).extract(),
-            "armor": ArmorExtractor(self.raw_data, valid_skill_ids).extract(),
-            "weapons": WeaponExtractor(self.raw_data, valid_rampage_skill_ids).extract(),
+            "armor": ArmorExtractor(self.raw_data, valid_skill_ids, monster_material_index).extract(),
+            "weapons": WeaponExtractor(self.raw_data, valid_rampage_skill_ids, monster_material_index).extract(),
         }
 
 

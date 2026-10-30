@@ -1,6 +1,6 @@
 import { SharpnessCalculator } from "../calc/SharpnessCalculator.js";
 import { ARMOR_TYPE_LABELS, ELEMENT_LABELS, ELEMENTAL_TYPES } from "../data/GameDataRepository.js";
-import { createElement, createEquipmentIcon, createRarityBadge, createSlotIcon } from "./dom.js";
+import { createElement, createEquipmentIcon, createRarityBadge, createSlotIcon, createWeaponRender } from "./dom.js";
 import { PickerDialog } from "./PickerDialog.js";
 import { SharpnessBarView } from "./SharpnessBarView.js";
 
@@ -14,8 +14,8 @@ const totalSkillPoints = (skillLevels) => skillLevels.reduce((total, skillLevel)
 const byName = (first, second) => first.name.localeCompare(second.name);
 const byRarityDescending = (first, second) => second.rarity - first.rarity || first.sortId - second.sortId;
 export const weaponElementTypes = (weapon) => [weapon.element?.type, weapon.subElement?.type].filter(Boolean);
-const createRowWithIcon = (iconElement, rowContent) =>
-  createElement("div", { className: "picker-row-with-icon" }, [iconElement, rowContent]);
+const createRowWithIcon = (iconElement, rowContent, trailingImage = null) =>
+  createElement("div", { className: "picker-row-with-icon" }, [iconElement, rowContent, trailingImage]);
 
 /** Filter and sort definitions shared by the weapon and armor pickers. */
 class EquipmentFilters {
@@ -71,6 +71,17 @@ class EquipmentFilters {
     };
   }
 
+  /** Filters by the monsters an item is crafted from; options list only monsters present in `items`. */
+  static monsterFilter(items) {
+    const monsterNames = [...new Set(items.flatMap((item) => item.monsters))].sort((first, second) => first.localeCompare(second));
+    return {
+      label: "Monster",
+      defaultValue: "all",
+      options: [{ value: "all", label: "Any" }, ...monsterNames.map((monsterName) => ({ value: monsterName, label: monsterName }))],
+      matches: (item, monsterName) => item.monsters.includes(monsterName),
+    };
+  }
+
   static minimumFilter(label, getValue) {
     return { label, type: "number", defaultValue: "", matches: (item, minimum) => getValue(item) >= minimum };
   }
@@ -92,6 +103,11 @@ export class EquipmentPickers {
   createSlotIcons(slotLevels) {
     return createElement("span", { className: "slot-icons" },
       slotLevels.length ? slotLevels.map((slotLevel) => createSlotIcon(slotLevel)) : [createElement("span", { className: "muted", text: "No slots" })]);
+  }
+
+  createMonsterLine(monsterNames) {
+    if (monsterNames.length === 0) return null;
+    return createElement("div", { className: "monster-line", text: `Made from: ${monsterNames.join(", ")}` });
   }
 
   createSkillTags(skillLevels) {
@@ -121,6 +137,7 @@ export class EquipmentPickers {
           options: repository.weaponTypes.map((weaponType) => ({ value: weaponType.key, label: weaponType.name })),
           matches: (weapon, weaponTypeKey) => weapon.type === weaponTypeKey,
         },
+        EquipmentFilters.monsterFilter(weapons),
         EquipmentFilters.rankFilter(),
         EquipmentFilters.rarityFilter(weapons),
         {
@@ -184,6 +201,7 @@ export class EquipmentPickers {
       ],
       searchText: (weapon) => [
         weapon.name,
+        ...weapon.monsters,
         weapon.element ? ELEMENT_LABELS[weapon.element.type] : "",
         ...weapon.rampageSkills.map((rampageSkillId) => repository.getRampageSkill(rampageSkillId)?.name ?? ""),
       ].join(" "),
@@ -215,10 +233,11 @@ export class EquipmentPickers {
           ? createElement("span", { className: "rampage-slots" }, ["Rampage ", ...weapon.rampageSlots.map((slotLevel) => createSlotIcon(slotLevel))])
           : null,
       ]),
+      this.createMonsterLine(weapon.monsters),
       weapon.sharpness
         ? SharpnessBarView.render(weapon.sharpness, true, this.maxHandicraftBarByWeaponId.get(weapon.id).segmentLengths)
         : null,
-    ]));
+    ]), createWeaponRender(this.gameDataRepository.getWeaponRenderUrl(weapon), weapon.name, "weapon-render-thumbnail"));
   }
 
   openArmorPicker(armorType) {
@@ -244,6 +263,7 @@ export class EquipmentPickers {
       selectedItem: currentArmorData,
       allowRemove: Boolean(currentArmorData),
       filters: [
+        EquipmentFilters.monsterFilter(armorPieces),
         EquipmentFilters.rankFilter(),
         EquipmentFilters.rarityFilter(armorPieces),
         { label: "Has skill", defaultValue: "all", options: skillOptions, matches: hasSkill },
@@ -275,7 +295,8 @@ export class EquipmentPickers {
         } },
         { value: "name", label: "Name (A to Z)", compare: byName },
       ],
-      searchText: (armorPiece) => `${armorPiece.name} ${armorPiece.seriesName} ${repository.describeSkillList(armorPiece.skills)}`,
+      searchText: (armorPiece) =>
+        `${armorPiece.name} ${armorPiece.seriesName} ${armorPiece.monsters.join(" ")} ${repository.describeSkillList(armorPiece.skills)}`,
       renderRow: (armorPiece) => createRowWithIcon(createEquipmentIcon(armorType, armorPiece.rarity, [], "large"), createElement("div", { className: "picker-row-content" }, [
         createElement("div", { className: "picker-row-main" }, [
           createRarityBadge(armorPiece.rarity),
@@ -289,6 +310,7 @@ export class EquipmentPickers {
               createElement("span", { className: `element-text element-${elementType}${value < 0 ? " negative" : ""}`, title: `${ELEMENT_LABELS[elementType]} resistance`, text: `${ELEMENT_LABELS[elementType]} ${value}` }))),
         ]),
         this.createSkillTags(armorPiece.skills),
+        this.createMonsterLine(armorPiece.monsters),
       ])),
       onSelect: (armorPiece) => this.build.equipArmor(armorType, armorPiece),
     });

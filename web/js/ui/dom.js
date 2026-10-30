@@ -60,6 +60,15 @@ export function createEquipmentIcon(equipmentKey, rarity, elementTypes = [], siz
   ]);
 }
 
+/** An in-game weapon render; returns null when the weapon has no render so callers can skip it. */
+export function createWeaponRender(renderUrl, weaponName, className) {
+  if (!renderUrl) return null;
+  return createElement("img", {
+    className: `weapon-render ${className}`,
+    attributes: { src: renderUrl, alt: weaponName, loading: "lazy", decoding: "async" },
+  });
+}
+
 export function createRarityBadge(rarity) {
   return createElement("span", { className: `rarity-badge rarity-${rarity}`, text: `R${rarity}` });
 }
