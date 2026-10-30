@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rise Armor Simulator</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1>Rise Armor Simulator</h1>
+      <p class="subtitle">Monster Hunter Rise: Sunbreak build planner</p>
+    </div>
+    <div class="toolbar">
+      <button id="share-button" class="button button-primary">Copy share link</button>
+      <button id="clear-decorations-button" class="button">Clear decorations</button>
+      <button id="reset-button" class="button button-danger">Reset build</button>
+    </div>
+  </header>
+
+  <div id="loading" class="loading">Loading game data...</div>
+
+  <main class="layout">
+    <div id="equipment-panel" class="column equipment-column" aria-label="Equipment"></div>
+    <div class="column stats-column">
+      <div id="stats-panel" class="panel"></div>
+      <div id="buff-panel" class="panel"></div>
+    </div>
+    <div id="skill-panel" class="column panel skill-column" aria-label="Skills"></div>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+</body>
+</html>

@@ -1,0 +1,8 @@
+services:
+  armor-sim:
+    build: .
+    image: mhrise-armor-sim
+    container_name: mhrise-armor-sim
+    ports:
+      - "7337:7337"
+    restart: unless-stopped
