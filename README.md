@@ -24,13 +24,48 @@ not included in the final image.
 ## Features
 
 - Weapons of all 14 types (LR/HR/MR), with sharpness, element, slots, rampage skills and rampage decoration slots
-- Head/chest/arms/waist/legs armor with skills, slots, base and fully upgraded defense, and resistances
+- Head/chest/arms/waist/legs armor with skills, slots, resistances, and a per-piece upgrade slider (base to max defense)
+- Weapon and armor search by name, skill or monster, plus filters (rarity, slots, element, sharpness, ...) and sorting
+- In-game renders of each weapon in the search list and on the equipped weapon
 - A custom talisman with 2 skills and up to 3 slots
 - Decoration slots: a jewel fits only if its size is at most the slot level. Rampage jewels are limited to the weapon types they allow.
 - Skill sheet: total points per skill (capped at max level), wasted points, the current level's effect, and where each point comes from
 - Stat sheet: attack, affinity, element, sharpness after Handicraft, effective raw and effective element, defense and resistances
 - Toggles for conditional skills (Agitator, Weakness Exploit, Peak Performance, ...) and item buffs (charms, talons, petalace)
 - The build saves automatically to the browser. "Copy share link" puts the whole build in the URL.
+
+## Equipment icons
+
+The game has no unique artwork per weapon in its menus. Every weapon and armor piece is shown with
+its type icon, tinted by rarity color, and the simulator does the same. The icon masks and element badges in
+`web/images/` were downloaded from the [MHRice](https://mhrise.mhrice.info) site with:
+
+```sh
+python3 tools/fetch_icons.py
+```
+
+They're committed to the repo, so building the image doesn't need network access. Re-run the script only to refresh them.
+
+## Weapon renders
+
+In-game renders of the weapons come from the [Monster Hunter Wiki](https://monsterhunter.fandom.com/wiki/MHRS:_Weapons).
+Weapons in one upgrade line share a 3D model, so renders are matched per model. The wiki's API reports which
+weapon pages use each render, and those names are matched to weapons in the game data. The renders are converted
+to WebP and committed under `web/images/weapons/`; `unmatched-report.txt` lists the weapons that got no render
+(they show their icon only). To refresh them (needs Pillow, so this runs in a throwaway container):
+
+```sh
+docker run --rm -v "$PWD":/work -w /work python:3.12-slim \
+  sh -c "pip install -q pillow && python tools/fetch_weapon_renders.py"
+```
+
+## Monster search
+
+The extractor tags each weapon and armor piece with the monsters it is crafted from, so you can search or
+filter by monster (e.g. "Rathalos"). A recipe counts toward a monster when the recipe is unlocked by that monster,
+when a material's name contains the monster's name, or when the drop tables show a material comes from only
+that monster. Weapons also carry the main monster of their upgrade line, and an upgrade that uses only generic
+materials (e.g. anomaly "Afflicted" parts) keeps the monster of the weapon it was upgraded from.
 
 ## Damage math
 
@@ -49,6 +84,8 @@ skill sheet. They just aren't tagged "in stats".
 
 ```
 tools/extract_data.py     raw dump -> compact game data (runs during docker build)
+tools/fetch_icons.py      downloads the equipment icons into web/images (already committed)
+tools/fetch_weapon_renders.py  downloads in-game weapon renders into web/images/weapons (already committed)
 web/index.html            page shell
 web/js/data/              GameDataRepository (indexed data access)
 web/js/models/            Build, EquippedWeapon/Armor, Talisman, DecorationSocket

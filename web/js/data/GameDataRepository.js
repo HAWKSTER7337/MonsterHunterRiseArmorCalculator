@@ -24,15 +24,29 @@ export const ELEMENTAL_TYPES = ["fire", "water", "thunder", "ice", "dragon"];
 
 /** Read-only, indexed access to the extracted game data. */
 export class GameDataRepository {
-  static async load(url) {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to load game data (${response.status})`);
+  static async load(gameDataUrl, weaponRenderIndexUrl) {
+    const [gameDataResponse, renderIndex] = await Promise.all([
+      fetch(gameDataUrl),
+      GameDataRepository.loadOptionalJson(weaponRenderIndexUrl),
+    ]);
+    if (!gameDataResponse.ok) {
+      throw new Error(`Failed to load game data (${gameDataResponse.status})`);
     }
-    return new GameDataRepository(await response.json());
+    return new GameDataRepository(await gameDataResponse.json(), renderIndex?.renders ?? {});
   }
 
-  constructor(rawGameData) {
+  /** Weapon renders are optional extras: the planner works (with icons only) if the index is missing. */
+  static async loadOptionalJson(url) {
+    try {
+      const response = await fetch(url);
+      return response.ok ? await response.json() : null;
+    } catch {
+      return null;
+    }
+  }
+
+  constructor(rawGameData, weaponRenderPathByModel = {}) {
+    this.weaponRenderPathByModel = weaponRenderPathByModel;
     this.weaponTypes = rawGameData.weaponTypes;
     this.skills = rawGameData.skills;
     this.decorations = rawGameData.decorations;
@@ -75,6 +89,12 @@ export class GameDataRepository {
 
   getWeapon(weaponId) {
     return this.weaponById.get(weaponId) ?? null;
+  }
+
+  /** URL of the in-game render for this weapon's model, or null when none was found. */
+  getWeaponRenderUrl(weapon) {
+    const renderPath = this.weaponRenderPathByModel[`${weapon.type}:${weapon.modelId}`];
+    return renderPath ? `images/${renderPath}` : null;
   }
 
   getWeaponTypeName(weaponTypeKey) {

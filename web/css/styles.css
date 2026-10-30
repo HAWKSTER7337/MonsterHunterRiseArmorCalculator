@@ -201,16 +201,21 @@ button, select, input { font: inherit; color: inherit; }
   font-weight: 700;
   padding: 1px 5px;
   border-radius: 4px;
-  background: #3a3a3a;
-  color: #fff;
+  background: var(--rarity-tint);
+  color: #15130f;
   flex-shrink: 0;
 }
-.rarity-1, .rarity-2, .rarity-3 { background: #6b6b6b; }
-.rarity-4, .rarity-5 { background: #3f8a4b; }
-.rarity-6, .rarity-7 { background: #3a6fb0; }
-.rarity-8 { background: #8a4bb5; }
-.rarity-9 { background: #b5662e; }
-.rarity-10 { background: #b53a3a; }
+/* Rarity badges share the in-game rarity colors with the equipment icons. */
+.rarity-1 { --rarity-tint: #ffffff; }
+.rarity-2 { --rarity-tint: #ffff8b; }
+.rarity-3 { --rarity-tint: #ff9fbd; }
+.rarity-4 { --rarity-tint: #9fe581; }
+.rarity-5 { --rarity-tint: #35ccff; }
+.rarity-6 { --rarity-tint: #6e8bff; }
+.rarity-7 { --rarity-tint: #f05a48; }
+.rarity-8 { --rarity-tint: #a9f0ff; }
+.rarity-9 { --rarity-tint: #956eff; }
+.rarity-10 { --rarity-tint: #fa9a3a; }
 
 .inline-field { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-muted); }
 
@@ -404,3 +409,57 @@ select:focus, input:focus { outline: 2px solid var(--accent); outline-offset: -1
 .armor-upgrade-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; margin-bottom: 12px; }
 .armor-upgrade-row .button { padding: 4px 12px; }
 .sharpness-segment.handicraft-extension { opacity: 0.4; }
+
+/* Equipment icons: the game's type icon, tinted with the rarity color (colors from the game data via MHRice) */
+.equip-icon {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  --rarity-tint: #ffffff;
+}
+.equip-icon-medium { width: 28px; height: 28px; }
+.equip-icon-large { width: 40px; height: 40px; }
+.equip-icon-outline, .equip-icon-fill {
+  position: absolute;
+  inset: 0;
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+}
+.equip-icon-outline { background-color: #000; }
+.equip-icon-fill { background-color: var(--rarity-tint); }
+.equip-icon-badge {
+  position: absolute;
+  bottom: -2px;
+  width: 50%;
+  height: 50%;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.equip-icon-badge.badge-position-0 { left: -2px; }
+.equip-icon-badge.badge-position-1 { left: 50%; }
+.rarity-tint-1 { --rarity-tint: #ffffff; }
+.rarity-tint-2 { --rarity-tint: #ffff8b; }
+.rarity-tint-3 { --rarity-tint: #ff9fbd; }
+.rarity-tint-4 { --rarity-tint: #9fe581; }
+.rarity-tint-5 { --rarity-tint: #35ccff; }
+.rarity-tint-6 { --rarity-tint: #6e8bff; }
+.rarity-tint-7 { --rarity-tint: #f05a48; }
+.rarity-tint-8 { --rarity-tint: #a9f0ff; }
+.rarity-tint-9 { --rarity-tint: #956eff; }
+.rarity-tint-10 { --rarity-tint: #fa9a3a; }
+.rarity-tint-empty { --rarity-tint: #4a4338; }
+
+.picker-row-with-icon { display: flex; align-items: flex-start; gap: 12px; }
+.picker-row-with-icon > .picker-row-content { flex: 1; min-width: 0; }
+.equipment-header .equip-icon { margin-right: -2px; }
+.monster-line { font-size: 11px; color: var(--text-muted); }
+
+/* In-game weapon renders (from the Monster Hunter Wiki) */
+.weapon-render { display: block; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5)); }
+.weapon-render-thumbnail { width: 128px; height: 96px; flex-shrink: 0; align-self: center; }
+.weapon-render-equipped { width: 100%; max-width: 256px; height: auto; max-height: 190px; align-self: center; }
+@media (max-width: 560px) {
+  .weapon-render-thumbnail { width: 88px; height: 66px; }
+}

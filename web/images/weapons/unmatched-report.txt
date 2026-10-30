@@ -1,0 +1,582 @@
+great_sword: 70/72 models matched from 72 renders; weapons without a render: 6
+    Champion Great Sword
+    Champion Great Sword II
+    Champion Great Sword III
+    Defender Great Sword I
+    Guardian Great Sword
+    Roilcloud Sword
+long_sword: 74/77 models matched from 77 renders; weapons without a render: 8
+    Azure Star "Dragon Dance"
+    Azure Star Blade I
+    Champion Long Sword
+    Champion Long Sword II
+    Champion Long Sword III
+    Defender Long Sword I
+    Guardian Long Sword
+    Ominous Spring
+short_sword: 71/73 models matched from 74 renders; weapons without a render: 6
+    Champion Sword
+    Champion Sword II
+    Champion Sword III
+    Defender Sword I
+    Guardian Sword
+    Ominous Treasure
+dual_blades: 71/73 models matched from 73 renders; weapons without a render: 6
+    Champion Dual Blades
+    Champion Dual Blades II
+    Champion Dual Blades III
+    Defender Dual Blades I
+    Guardian Dual Blades
+    Stormwind Fans
+hammer: 57/74 models matched from 60 renders; weapons without a render: 79
+    Armored Gogue
+    Armored Gogue+
+    Armored Megagogue
+    Armored Megagogue+
+    Barbearic Hammer
+    Barbearic Hammer+
+    Bearly Eyhammer
+    Binding Bludgeon I
+    Binding Bludgeon II
+    Blower's Hammer
+    Bone Hammer I
+    Bone Hammer II
+    Champion Hammer
+    Champion Hammer II
+    Champion Hammer III
+    Defender Hammer I
+    Despot's Crackle
+    Despot's Crackle+
+    Diablos Hammer I
+    Diablos Hammer II
+    Diablos Maul+
+    Diablos Tail
+    Dreamy Bear
+    Egg Hammer I
+    Egg Hammer II
+    Enlightenment Hammer
+    Enlightenment Hammer+
+    Finishing Hammer
+    Finishing Hammer+
+    Frilled Blow I
+    Frilled Blow II
+    Gargegg Hammer
+    Gargwa Hammer
+    Gargwa Hammer+
+    Guardian Hammer
+    Hard Bone Hammer
+    Huge Tigrex Hammer
+    Huge Tigrex Hammer+
+    Illusory Frilled Blow
+    Illusory Frilled Blow+
+    Incubus Hammer
+    Iron Devil
+    Iron Hammer I
+    Izuchi Hammer I
+    Izuchi Hammer II
+    Kamura Hammer I
+    Kamura Hammer II
+    Kamura Hammer III
+    Kamura Hammer IV
+    Kamura Hammer V
+    Kamura Ninja Hammer
+    Mane Malice I
+    Mane Malice II
+    Mane Malice Rajang
+    Mane Malice Rajang+
+    Mane Master Rajang
+    Nightmare Frilled Blow
+    Nightmare Frilled Blow+
+    Oppressor's Sway
+    Purity Hammer I
+    Purity Hammer II
+    Sinter Hammer
+    Sinter Hammer+
+    Sleepy Bear
+    Sleepy Bear+
+    Snapper Hammer
+    Snapper Hammer+
+    Striped Striker I
+    Striped Striker II
+    Teddybear I
+    Teddybear II
+    Tigrex Hammer
+    Tigrex Hammer+
+    Unbearable Hammer I
+    Unbearable Hammer II
+    Usurper's Thunder I
+    Usurper's Thunder II
+    War Hammer I
+    War Mace
+horn: 67/73 models matched from 73 renders; weapons without a render: 21
+    Autumn Lute
+    Baselsium Rookslayer
+    Bazelreid Rookslayer
+    Champion Horn
+    Champion Horn II
+    Champion Horn III
+    Crimson Clearwing
+    Daora's Baphophone
+    Daora's Baphophone+
+    Daora's Diabassoon
+    Daora's Taus I
+    Defender Horn I
+    Guardian Horn
+    Reddnaught Ritmico
+    Redwing Flute I
+    Rookslayer Drum I
+    Rookslayer Drum II
+    Teostra's Musica
+    Teostra's Orphée
+    Teostra's Orphée+
+    Teostra's Tiple I
+lance: 68/71 models matched from 71 renders; weapons without a render: 8
+    Bone Lance I
+    Champion Lance
+    Champion Lance II
+    Champion Lance III
+    Defender Lance I
+    Guardian Lance
+    Hard Bone Lance
+    Ominous Cloud
+gun_lance: 58/71 models matched from 61 renders; weapons without a render: 62
+    Admiral's Arbalance
+    Admiral's Arbalance+
+    Avidya Gunlance
+    Bone Gunlance I
+    Bone Gunlance II
+    Champion Gunlance
+    Champion Gunlance II
+    Champion Gunlance III
+    Cornpopper I
+    Cornpopper II
+    Crunchy Cornpopper
+    Datura Grimbarb
+    Datura Grimbarb+
+    Datura Gunlance
+    Datura Gunlance+
+    Defender Gunlance I
+    Demon Gunlance I
+    Demon Gunlance II
+    Diablos Cannon
+    Diablos Cannon+
+    Diablos Gunlance I
+    Diablos Gunlance II
+    Diablos Horncannon
+    Diablos Horncannon+
+    Dragon Gunlance
+    Droth Romeo
+    Droth Romeo+
+    Eizenlitter
+    Fading Night
+    Fiore Nulo I
+    Fiore Nulo II
+    Fiore Unu
+    General's Arbalance I
+    General's Arbalance II
+    Great Demon Gunlance
+    Great Demon Gunlance+
+    Great Tigrex Gunlance
+    Great Tigrex Gunlance+
+    Guardian Gunlance
+    Hidden Gunlance I
+    Hidden Gunlance II
+    Imperial Swornlance
+    Imperial Swornlance+
+    Iron Gunlance I
+    Iron Gunlance II
+    Ludroth Harpoon I
+    Ludroth Harpoon II
+    Ludroth Harpoon III
+    Ludroth Shellbreaker
+    Ludroth Shellbreaker+
+    Mighty Cornpopper
+    Mighty Cornpopper+
+    New Moon
+    New Moon+
+    Ominous Monsoon
+    Pukei Gunlance I
+    Pukei Gunlance II
+    Tiger Blast I
+    Tiger Blast II
+    Tigrex Gunlance
+    Tigrex Gunlance+
+    Wyvern Bone Gunlance
+slash_axe: 58/72 models matched from 64 renders; weapons without a render: 62
+    Avidya Axe
+    Axe Semper Tyrannis I
+    Axe Semper Tyrannis II
+    Axe of Gaia
+    Axe of Gaia+
+    Bazelava Rookslayer
+    Bazelrush Rookslayer
+    Bone Axe I
+    Bone Axe II
+    Champion Switch Axe
+    Champion Switch Axe II
+    Champion Switch Axe III
+    Cloudburst Axe
+    Crescent Moon
+    Crescent Moon+
+    Daidalos Axe
+    Daora's Ajniha
+    Daora's Farasa I
+    Daora's Janah
+    Daora's Janah+
+    Defender Switch Axe I
+    Dragonmaiden Axe I
+    Dragonmaiden Axe II
+    Grand Chaos
+    Grand Chaos+
+    Gríðr's Landforger
+    Gríðr's Landforger+
+    Gríðr's Landmaker
+    Gríðr's Landmaker+
+    Guardian Switch Axe
+    Hidden Axe I
+    Hidden Axe II
+    Improved Steel Axe
+    Night's Crescent
+    Proto Iron Axe I
+    Proto Iron Axe II
+    Rampage Slicer I
+    Rampage Slicer II
+    Rampage Slicer III
+    Rampage Slicer IV
+    Rampage Slicer S
+    Rampage Slicer V
+    Reddnaught Dunat
+    Redwing Switch Axe I
+    Rex Gnasher
+    Rex Gnasher+
+    Rex Slasher I
+    Rex Slasher II
+    Rex Thrasher
+    Rex Thrasher+
+    Rookslayer Axe I
+    Rookslayer Axe II
+    Teostra's Arx I
+    Teostra's Castle
+    Teostra's Castle+
+    Teostra's Hellebarde
+    Undying Axe I
+    Undying Axe II
+    Undying Light
+    Undying Light+
+    Undying Purity
+    Wing of Sanctity
+charge_axe: 53/66 models matched from 59 renders; weapons without a render: 58
+    Altostratus Blade
+    Araknablade
+    Araknasmasher
+    Araknasmasher+
+    Biting Edge I
+    Biting Edge II
+    Bone Strongarm I
+    Bone Strongarm II
+    Cera Cediment
+    Cera Cediment+
+    Cera Strongarm
+    Cera Strongarm+
+    Champion Charge Blade
+    Champion Charge Blade II
+    Champion Charge Blade III
+    Crawling Crusher
+    Crimson Mechwing
+    Daora's Casca I
+    Daora's Thwartoise
+    Daora's Thwartoise+
+    Daora's Worldbearer
+    Defender Charge Blade I
+    Diablos Strongarm I
+    Diablos Strongarm II
+    Divine Fieldblade
+    Divine Fieldblade+
+    Final Fieldblade
+    Final Fieldblade+
+    Guardian Charge Blade
+    Hard Bone Strongarm
+    Huge Tigrex Blade
+    Huge Tigrex Blade+
+    Hyperguard I
+    Hyperguard II
+    Ikaji Immortal
+    Ikaji Immortal+
+    Mizuniya Drill I
+    Mizuniya Drill II
+    Redwing Edge I
+    Regas Hyper
+    Rotaxion
+    Rotaxion+
+    Rough Roller I
+    Rough Roller II
+    Skaltecore
+    Teostra's Nova
+    Teostra's Nova+
+    Teostra's Redeemer
+    Teostra's Striker I
+    Tigrex Blade
+    Tigrex Blade+
+    Tigrex Divide I
+    Tigrex Divide II
+    Undying Blade I
+    Undying Blade II
+    Unyielding Honor
+    Vortax
+    Vortax+
+insect_glaive: 55/67 models matched from 61 renders; weapons without a render: 49
+    Aerial Glaive
+    Bone Staff I
+    Bone Staff II
+    Brush Glaive I
+    Brush Glaive II
+    Champion Glaive
+    Champion Glaive II
+    Champion Glaive III
+    Crimson Springwing
+    Defender Glaive I
+    Diablos Rod I
+    Diablos Rod II
+    Guardian Glaive
+    Horned Tyrant
+    Horned Tyrant+
+    Iron Blade I
+    Iron Blade II
+    Metal Mauler I
+    Metal Mauler II
+    Metal Mutilator
+    Metalmangler
+    Metalmangler+
+    Mighty Soulromancer
+    New World Brush Glaive
+    Poet's Brush Glaive
+    Reddnaught Shuma
+    Redwing Glaive I
+    Rielle Du Green
+    Rielle Du White
+    Rielle Nulo Green I
+    Rielle Nulo Green II
+    Rielle Nulo I
+    Rielle Nulo II
+    Rielle Nulo White I
+    Rielle Nulo White II
+    Rielle Tre Green
+    Rielle Tre White
+    Rielle Unu
+    Rielle Unu Green
+    Rielle Unu White
+    Sinister Shadowstaff
+    Sinister Shadowstaff+
+    Sinister Staff I
+    Sinister Staff II
+    Steel Blade
+    Stratus Arc
+    Tyrant Rod
+    Tyrant Rod+
+    Watercolor Glaive
+light_bowgun: 52/67 models matched from 59 renders; weapons without a render: 68
+    Abominable Bowgun
+    Abominable Snowshot
+    Barro Barrel I
+    Barro Barrel II
+    Barro Blaster
+    Barro Blaster+
+    Barrozooka
+    Barrozooka+
+    Bazelfetter Rookslayer
+    Bazelvalor Rookslayer
+    Blizzard Cannon I
+    Blizzard Cannon II
+    Blizzard Squall
+    Blizzard Squall+
+    Blizzard Volley
+    Champion Light Bowgun
+    Champion Light Bowgun II
+    Champion Light Bowgun III
+    Cross Blitz
+    Cross Bowgun I
+    Cross Bowgun II
+    Daora's Hornet
+    Daora's Hornet+
+    Daora's Yellowjacket
+    Defender Light Bowgun I
+    Elder's Grace
+    Gossgun I
+    Gossgun II
+    Gossgun III
+    Great Tigrex Wargun
+    Great Tigrex Wargun+
+    Grenade Launcher I
+    Grenade Launcher II
+    Grenade Launcher III
+    Grenade Revolver
+    Grenade Revolver+
+    Gross Gossgun
+    Gross Gossgun+
+    Guardian Light Bowgun
+    Hunter's Rifle I
+    Hunter's Rifle II
+    Icesteel Wasp I
+    Rajang Barrage I
+    Rajang Barrage II
+    Rathling Gun I
+    Rathling Gun II
+    Rathling Phoenix
+    Rathling Phoenix+
+    Reddnaught Bowgun
+    Redwing Shooter I
+    Rookslayer Bowgun I
+    Rookslayer Bowgun II
+    Seering Rathling Phoenix
+    Sniper Shot
+    Tabula Blizzara
+    Ten Million Volts
+    Ten Thousand Volts
+    Ten Thousand Volts+
+    Teostra's Dart I
+    Teostra's Flamebolt
+    Teostra's Flamebolt+
+    Teostra's Flamepiercer
+    Tigrex Tank I
+    Tigrex Tank II
+    Tigrex Wargun
+    Tigrex Wargun+
+    Volarevolver
+    Wicked Needle
+heavy_bowgun: 52/67 models matched from 58 renders; weapons without a render: 67
+    Anteka Blaster
+    Anteka Blaster+
+    Anteka Burst I
+    Anteka Burst II
+    Bone Buster
+    Bone Shooter I
+    Bone Shooter II
+    Champion Heavy Bowgun
+    Champion Heavy Bowgun II
+    Champion Heavy Bowgun III
+    Crimson Geyserwing
+    Cyclecaster
+    Daora Grande
+    Daora Grande+
+    Daora's Ceti
+    Daora's Delphinidae I
+    Defender Heavy Bowgun I
+    Diablazooka
+    Diablazooka+
+    Diabolica
+    Dual Threat I
+    Dual Threat II
+    Flidaismaker
+    Great Ladybug Launcher
+    Guardian Heavy Bowgun
+    Guerrera Cannon I
+    Guerrera Cannon II
+    Guerrera Herald
+    Guerrera Herald+
+    Horned Demonica
+    Horned Demonica+
+    Huge Tigrex Skull
+    Huge Tigrex Skull+
+    Hypercaster
+    Ill Omen
+    Iron Assault I
+    Iron Assault II
+    Ladybug Cannon I
+    Ladybug Cannon II
+    Ladybug Launcher
+    Ladybug Mortar
+    Pukei Launcher I
+    Pukei Launcher II
+    Rajang Cyclone
+    Rajang Shooter I
+    Rajang Shooter II
+    Rajang's Rage
+    Rajang's Rage+
+    Rapidcaster I
+    Rapidcaster II
+    Redwing Cannon I
+    Steel Assault
+    Teostra's Artillery I
+    Teostra's Firestorm
+    Teostra's Flames
+    Teostra's Flames+
+    Thorn Cannon
+    Tigrex Howl I
+    Tigrex Howl II
+    Tigrex Skull
+    Tigrex Skull+
+    Torrentcaster
+    Valía Cannon
+    Venomhail
+    Venomhail+
+    Venomsurge
+    Venomsurge+
+bow: 62/78 models matched from 69 renders; weapons without a render: 68
+    Arko Nulo I
+    Arko Nulo II
+    Arko Unu
+    Azure Era "Soaring Dragon"
+    Azure Era Wyrmbow I
+    Beast Thunderbow I
+    Beast Thunderbow II
+    Beastczar Thunderbow
+    Beastking Thunderbow
+    Beastking Thunderbow+
+    Bone Gun I
+    Bone Gun II
+    Bow of Hope & Valor I
+    Bow of Light & Courage
+    Bow of Light & Courage+
+    Bow of Want & Blood
+    Champion Bow
+    Champion Bow II
+    Champion Bow III
+    Chaos Bow I
+    Chaos Bow II
+    Chaotic Rapture
+    Chaotic Rapture+
+    Chaotic Thrall
+    Crimson Plume
+    Daora's Sagittarii
+    Daora's Sagittarii+
+    Daora's Toxotes
+    Defender Bow I
+    Diablos Coilbender I
+    Diablos Coilbender II
+    Drothdymion
+    Drothdymion+
+    Frozen Bow
+    Frozen Bow+
+    Frozen Solstice
+    Guardian Bow
+    Hyper Bone Gun
+    Icesteel Bow I
+    Iron Bow I
+    Iron Bow II
+    Ivory Bow I
+    Ivory Bow II
+    Kamura Iron Bow I
+    Kamura Iron Bow II
+    Kamura Iron Bow III
+    Kamura Iron Bow IV
+    Kamura Iron Bow V
+    Kamura Ninja Bow
+    Porifera Bow
+    Porifera Bow+
+    Reddnaught Dragon Arc
+    Redwing Bow I
+    Spongia Bow I
+    Spongia Bow II
+    Spongia Bow III
+    Steel Bow
+    Tempest Nightbow
+    The Terrible
+    The Terrible+
+    Tigrex Archer I
+    Tigrex Archer II
+    Tigrex Vibrissa
+    Tigrex Vibrissa+
+    Tigrex Whisker
+    Tigrex Whisker+
+    Tyrant Bow
+    Tyrant Bow+

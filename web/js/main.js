@@ -4,7 +4,7 @@ import { GameDataRepository } from "./data/GameDataRepository.js";
 const byId = (elementId) => document.getElementById(elementId);
 
 try {
-  const gameDataRepository = await GameDataRepository.load("data/game-data.json");
+  const gameDataRepository = await GameDataRepository.load("data/game-data.json", "images/weapons/renders.json");
   const app = new BuildPlannerApp(gameDataRepository, {
     equipment: byId("equipment-panel"),
     stats: byId("stats-panel"),
