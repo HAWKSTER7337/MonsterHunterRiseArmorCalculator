@@ -1,14 +1,31 @@
 import { DecorationSocket } from "./DecorationSocket.js";
 
-/** An armor piece the hunter is wearing, with its decoration sockets. */
+// Every armor buildup table in the game data raises defense by 2 per upgrade level.
+const DEFENSE_PER_UPGRADE_LEVEL = 2;
+
+/** An armor piece the hunter is wearing, with its decoration sockets and upgrade level. */
 export class EquippedArmor {
-  constructor(armorData) {
+  constructor(armorData, upgradeLevel = null) {
     this.armorData = armorData;
     this.sockets = DecorationSocket.fromSlotLevels(armorData.slots);
+    this.setUpgradeLevel(upgradeLevel ?? this.maxUpgradeLevel);
   }
 
   get innateSkills() {
     return this.armorData.skills;
+  }
+
+  get maxUpgradeLevel() {
+    return 1 + Math.ceil((this.armorData.maxDefense - this.armorData.defense) / DEFENSE_PER_UPGRADE_LEVEL);
+  }
+
+  get currentDefense() {
+    const upgradeBonus = (this.upgradeLevel - 1) * DEFENSE_PER_UPGRADE_LEVEL;
+    return Math.min(this.armorData.defense + upgradeBonus, this.armorData.maxDefense);
+  }
+
+  setUpgradeLevel(upgradeLevel) {
+    this.upgradeLevel = Math.max(1, Math.min(this.maxUpgradeLevel, Math.round(Number(upgradeLevel) || 1)));
   }
 }
 

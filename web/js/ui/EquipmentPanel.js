@@ -105,13 +105,10 @@ export class EquipmentPanel {
   renderArmorCard(armorType) {
     const equippedArmor = this.build.armorByType[armorType];
     const armorData = equippedArmor?.armorData ?? null;
-    const defenseText = armorData && (this.build.buffSettings.useMaxArmorLevel
-      ? `Defense ${armorData.maxDefense} (max level)`
-      : `Defense ${armorData.defense}`);
     return createElement("section", { className: "equipment-card" }, [
       this.renderCardHeader(ARMOR_TYPE_LABELS[armorType], armorData, () => this.equipmentPickers.openArmorPicker(armorType)),
+      equippedArmor && this.renderDefenseSlider(armorType, equippedArmor),
       armorData && createElement("div", { className: "equipment-stats" }, [
-        createElement("span", { text: defenseText }),
         ...Object.entries(armorData.resistances).filter(([, value]) => value !== 0).map(([elementType, value]) =>
           createElement("span", { className: `element-text element-${elementType}`, text: `${ELEMENT_LABELS[elementType]} ${value > 0 ? "+" : ""}${value}` })),
       ]),
@@ -119,6 +116,38 @@ export class EquipmentPanel {
       equippedArmor && this.renderSocketRow(equippedArmor.sockets,
         (decorationId) => this.gameDataRepository.getDecoration(decorationId),
         (socket) => this.equipmentPickers.openDecorationPicker(socket)),
+    ]);
+  }
+
+  /** Slider over upgrade levels, from the piece's base defense up to its fully upgraded defense. */
+  renderDefenseSlider(armorType, equippedArmor) {
+    const armorData = equippedArmor.armorData;
+    const valueLabel = createElement("span", { className: "defense-slider-value" });
+    const updateValueLabel = () => {
+      valueLabel.textContent = `Defense ${equippedArmor.currentDefense} · Lv ${equippedArmor.upgradeLevel}/${equippedArmor.maxUpgradeLevel}`;
+    };
+    const slider = createElement("input", {
+      className: "defense-slider",
+      attributes: {
+        type: "range",
+        min: 1,
+        max: equippedArmor.maxUpgradeLevel,
+        step: 1,
+        disabled: equippedArmor.maxUpgradeLevel <= 1,
+        "aria-label": `${ARMOR_TYPE_LABELS[armorType]} upgrade level`,
+      },
+      onInput: (event) => {
+        this.build.setArmorUpgradeLevel(armorType, event.target.value);
+        updateValueLabel();
+      },
+    });
+    slider.value = equippedArmor.upgradeLevel;
+    updateValueLabel();
+    return createElement("div", { className: "defense-slider-row" }, [
+      createElement("span", { className: "defense-slider-bound", text: armorData.defense }),
+      slider,
+      createElement("span", { className: "defense-slider-bound", text: armorData.maxDefense }),
+      valueLabel,
     ]);
   }
 

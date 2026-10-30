@@ -1,7 +1,6 @@
 import { createElement } from "./dom.js";
 
 const TOGGLE_SETTINGS = [
-  { settingName: "useMaxArmorLevel", label: "Armor fully upgraded" },
   { settingName: "powercharm", label: "Powercharm (+6 attack)" },
   { settingName: "powertalon", label: "Powertalon (+9 attack)" },
   { settingName: "armorcharm", label: "Armorcharm (+12 defense)" },
@@ -13,7 +12,7 @@ const NUMBER_SETTINGS = [
   { settingName: "petalaceDefense", label: "Petalace defense" },
 ];
 
-/** Build-wide settings: armor upgrade level and always-on item buffs. */
+/** Build-wide settings: bulk armor upgrade level and always-on item buffs. */
 export class BuffPanel {
   constructor(containerElement, build) {
     this.containerElement = containerElement;
@@ -38,8 +37,14 @@ export class BuffPanel {
       input.value = buffSettings[settingName];
       return createElement("label", { className: "buff-number" }, [createElement("span", { text: label }), input]);
     });
+    const armorUpgradeRow = createElement("div", { className: "armor-upgrade-row" }, [
+      createElement("span", { text: "Set all armor defense to" }),
+      createElement("button", { className: "button", text: "Base", onClick: () => this.build.setAllArmorUpgraded(false) }),
+      createElement("button", { className: "button", text: "Max", onClick: () => this.build.setAllArmorUpgraded(true) }),
+    ]);
     this.containerElement.replaceChildren(
       createElement("h2", { text: "Buffs & Settings" }),
+      armorUpgradeRow,
       createElement("div", { className: "buff-grid" }, [...toggles, ...numberInputs]),
     );
   }

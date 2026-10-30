@@ -215,13 +215,10 @@ export class StatCalculator {
 
   calculateDefense(build, statModifiers, weaponStats) {
     const buffs = build.buffSettings;
-    const armorDefense = ARMOR_TYPES.reduce((total, armorType) => {
-      const armorData = build.armorByType[armorType]?.armorData;
-      if (!armorData) {
-        return total;
-      }
-      return total + (buffs.useMaxArmorLevel ? armorData.maxDefense : armorData.defense);
-    }, 0);
+    const armorDefense = ARMOR_TYPES.reduce(
+      (total, armorType) => total + (build.armorByType[armorType]?.currentDefense ?? 0),
+      0,
+    );
     const itemDefenseBonus = (buffs.armorcharm ? ITEM_BUFF_VALUES.armorcharm : 0)
       + (buffs.armortalon ? ITEM_BUFF_VALUES.armortalon : 0)
       + Number(buffs.petalaceDefense || 0);
