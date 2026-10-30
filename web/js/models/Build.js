@@ -2,8 +2,12 @@ import { ARMOR_TYPES } from "../data/GameDataRepository.js";
 import { DecorationSocket } from "./DecorationSocket.js";
 import { EquippedArmor, EquippedWeapon, Talisman } from "./Equipment.js";
 
+export const BUILD_CHANGE_REASONS = {
+  general: "general",
+  armorUpgrade: "armorUpgrade",
+};
+
 export const DEFAULT_BUFF_SETTINGS = {
-  useMaxArmorLevel: true,
   powercharm: true,
   powertalon: true,
   armorcharm: true,
@@ -28,8 +32,8 @@ export class Build {
     this.changeListeners.push(listener);
   }
 
-  notifyChanged() {
-    this.changeListeners.forEach((listener) => listener(this));
+  notifyChanged(changeReason = BUILD_CHANGE_REASONS.general) {
+    this.changeListeners.forEach((listener) => listener(this, changeReason));
   }
 
   /** Every piece that can carry decorations, in display order. */
@@ -44,6 +48,20 @@ export class Build {
 
   equipArmor(armorType, armorData) {
     this.armorByType[armorType] = armorData ? new EquippedArmor(armorData) : null;
+    this.notifyChanged();
+  }
+
+  setArmorUpgradeLevel(armorType, upgradeLevel) {
+    this.armorByType[armorType]?.setUpgradeLevel(upgradeLevel);
+    this.notifyChanged(BUILD_CHANGE_REASONS.armorUpgrade);
+  }
+
+  /** Sets every equipped piece to its base (level 1) or fully upgraded defense. */
+  setAllArmorUpgraded(isFullyUpgraded) {
+    ARMOR_TYPES.forEach((armorType) => {
+      const equippedArmor = this.armorByType[armorType];
+      equippedArmor?.setUpgradeLevel(isFullyUpgraded ? equippedArmor.maxUpgradeLevel : 1);
+    });
     this.notifyChanged();
   }
 
@@ -114,7 +132,11 @@ export class Build {
       armor: Object.fromEntries(
         ARMOR_TYPES.map((armorType) => {
           const equippedArmor = this.armorByType[armorType];
-          return [armorType, equippedArmor && { id: equippedArmor.armorData.id, decorations: socketIds(equippedArmor.sockets) }];
+          return [armorType, equippedArmor && {
+            id: equippedArmor.armorData.id,
+            upgradeLevel: equippedArmor.upgradeLevel,
+            decorations: socketIds(equippedArmor.sockets),
+          }];
         }),
       ),
       talisman: {
@@ -148,10 +170,14 @@ export class Build {
       this.weapon.selectRampageSkill(savedBuild.weapon.rampageSkillId);
     }
 
+    // Saves made before per-piece upgrade levels only had a global "fully upgraded" switch.
+    const legacyUpgradeLevel = savedBuild?.buffs?.useMaxArmorLevel === false ? 1 : null;
     ARMOR_TYPES.forEach((armorType) => {
       const savedArmor = savedBuild?.armor?.[armorType];
       const armorData = repository.getArmor(savedArmor?.id);
-      this.armorByType[armorType] = armorData?.type === armorType ? new EquippedArmor(armorData) : null;
+      this.armorByType[armorType] = armorData?.type === armorType
+        ? new EquippedArmor(armorData, savedArmor.upgradeLevel ?? legacyUpgradeLevel)
+        : null;
       if (this.armorByType[armorType]) {
         DecorationSocket.restoreDecorations(this.armorByType[armorType].sockets, savedArmor.decorations, lookupDecoration);
       }
@@ -165,7 +191,8 @@ export class Build {
       DecorationSocket.restoreDecorations(this.talisman.sockets, savedTalisman.decorations, lookupDecoration);
     }
 
-    this.buffSettings = { ...DEFAULT_BUFF_SETTINGS, ...(savedBuild?.buffs ?? {}) };
+    const { useMaxArmorLevel, ...savedBuffSettings } = savedBuild?.buffs ?? {};
+    this.buffSettings = { ...DEFAULT_BUFF_SETTINGS, ...savedBuffSettings };
     this.inactiveConditionalSkillIds = new Set(savedBuild?.inactiveConditions ?? []);
     this.notifyChanged();
   }

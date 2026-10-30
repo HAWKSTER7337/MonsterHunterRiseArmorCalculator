@@ -1,6 +1,6 @@
 import { BuildStorage } from "./BuildStorage.js";
 import { StatCalculator } from "./calc/StatCalculator.js";
-import { Build } from "./models/Build.js";
+import { Build, BUILD_CHANGE_REASONS } from "./models/Build.js";
 import { BuffPanel } from "./ui/BuffPanel.js";
 import { EquipmentPanel } from "./ui/EquipmentPanel.js";
 import { EquipmentPickers } from "./ui/EquipmentPickers.js";
@@ -24,7 +24,7 @@ export class BuildPlannerApp {
   }
 
   start() {
-    this.build.onChange(() => this.handleBuildChanged());
+    this.build.onChange((build, changeReason) => this.handleBuildChanged(changeReason));
     this.bindToolbar();
     const savedBuild = this.buildStorage.loadSavedBuild();
     if (savedBuild) {
@@ -34,14 +34,17 @@ export class BuildPlannerApp {
     }
   }
 
-  handleBuildChanged() {
+  handleBuildChanged(changeReason) {
     this.buildStorage.save(this.build);
-    this.render();
+    // Re-rendering the equipment panel while an upgrade slider is being dragged would replace the slider.
+    this.render({ includeEquipmentPanel: changeReason !== BUILD_CHANGE_REASONS.armorUpgrade });
   }
 
-  render() {
+  render({ includeEquipmentPanel = true } = {}) {
     const statSheet = this.statCalculator.calculate(this.build);
-    this.equipmentPanel.render();
+    if (includeEquipmentPanel) {
+      this.equipmentPanel.render();
+    }
     this.statsPanel.render(statSheet);
     this.buffPanel.render();
     this.skillSheetPanel.render(statSheet.activeSkills);
